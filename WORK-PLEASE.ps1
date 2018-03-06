@@ -1,26 +1,9 @@
-
+﻿
 function Get-TfsBldDef
 {
         <#
         .SYNOPSIS
-        
-        It seems possible to update the PSCustom object that was returned  
-        The plan is thus:
-        1) Get the build def
-        2) Scan it to see if there is somthing that needs updating
-        3) Updat the build definition as required witin the PSObject - plain .(dot) notation
-        this seems to work fine
-        4) Then convert to JSon 
-        5) Do the PUT passing the JSon as body 
-        6) Check the return code
-        7) Log our action for audit purposes
-        
 
-        .PARAMETER WiqlQuery
-        This is the query that will determine the workitems selected and returned to the caller.
-
-        .EXAMPLE
-        Get-TfsWorkItems "SELECT System.ID, System.Title from workitems"
     #>
     param(
         [Parameter(Mandatory)]
@@ -28,6 +11,61 @@ function Get-TfsBldDef
         [Parameter(Mandatory)]
         [string]$TfsCollection
     )
+#####################################################################
+
+
+
+
+
+#local
+$base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f "T800\morne","en55denwlgpdxw2t4bwkdq6apfbugspjaxbhjhrxvymex5tqb2aa")))
+
+#vsts
+#$base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f "morne","w6zlqyawxnfomgwwh3v3zll6tfg2i2y35nsjtjotbzpc5acwpvyq")))
+
+#local
+$url = "http://t800:8080/tfs/DefaultCollection/Discovery/_apis/build/definitions/2?api-version=2.0"  #local
+
+#vsts
+#$url = "https://krugers.visualstudio.com/Build-Discovery/_apis/build/definitions/1?api-version=2.0"  #vsts
+
+#$definition = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $env:SYSTEM_ACCESSTOKEN"} -Method Get -ContentType application/json
+$definition = Invoke-RestMethod -Uri $url -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -Method Get -ContentType application/json
+
+#Write-Host "Befor json = $($definition | ConvertTo-Json -Depth 100)" 
+
+    #$definition.build[1].enabled = "True"   
+    #$definition.build[1].DisplayName = "LaterGet- bla-bla-bla"
+    $definition.Name = "Batman"
+
+try {
+    [void][System.Reflection.Assembly]::LoadFile("C:\Program Files\WindowsPowerShell\Modules\newtonsoft.json\1.0.1.141\libs\Newtonsoft.Json.dll")
+    #$buildDefinition = [Newtonsoft.Json.JsonConvert]::DeserializeObject($definition)
+    $serialized = [Newtonsoft.Json.JsonConvert]::SerializeObject($definition)
+
+    #$body = (Convertto-Json  $definition -Depth 100) | clip
+    #$body = (Get-Content "C:\dev\PowerShell\Tfs-BuildDefinitions\TfsBuildUpdater\json_inputs\t800\BuildDefKillerApp.json") #sort of works ...
+    $Updatedefinition = Invoke-RestMethod -uri $url -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -Method PUT -Body $serialized -ContentType application/json
+}
+catch {
+         $ErrorMessage = $_.Exception.Message
+         $FailedItem = $_.Exception.ItemName
+         Write-Host "errormessage = $ErrorMessage failditem = $FailedItem"
+         Write-Host $Error(0)
+
+#    $streamReader = [System.IO.StreamReader]::new($_.Exception.Response.GetResponseStream())
+#    $ErrResp = $streamReader.ReadToEnd() | ConvertFrom-Json
+#    $streamReader.Close()
+}
+
+Write-Host "After json = $($Updatedefinition | ConvertTo-Json -Depth 100)" 
+
+
+#######################################################################
+
+
+
+
 
     Write-Host "`nGathering Tfs projects for:"
     Write-Host "TfsCollection : $TfsCollection"

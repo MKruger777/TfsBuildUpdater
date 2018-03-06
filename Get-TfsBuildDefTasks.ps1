@@ -30,8 +30,11 @@ function Get-TfsBuildDefTasks
     # Write-Host "TfsProject : $TfsProject"
 
     Write-Host "URI= $wiqlUrl"
-    $JsonResult = Invoke-RestMethod -UseDefaultCredentials -uri $TfsBldDefUrl -Method Get -ContentType 'application/Json'
+    #$JsonResult = Invoke-RestMethod -UseDefaultCredentials -uri $TfsBldDefUrl -Method Get -ContentType 'application/Json'
 
+    $TfsBldDefUrl = "http://t800:8080/tfs/DefaultCollection/Discovery/_apis/build/definitions/2?revision=12.0"
+    $JsonResult = Invoke-RestMethod -UseDefaultCredentials -uri $TfsBldDefUrl -Method Get -ContentType 'application/Json'
+    
     Write-Host "`nBuild tasks found = " $JsonResult.Build.Count
     if($JsonResult.Build.Count -gt 0)
     {

@@ -24,7 +24,7 @@ function Get-AllBuildDefsForCollection
     Write-Host "TfsCollection : $TfsCollection"
 
     $WorkItemIDs = New-Object System.Collections.Generic.List[System.Object]
-    $wiqlUrl = "http://papptfs17.binckbank.nv:8080/tfs/$TfsCollection/_apis/projects?api-version=1.0"
+    $wiqlUrl = "http://t800:8080/tfs/$TfsCollection/_apis/projects?api-version=1.0"
     $JsonResult = Invoke-RestMethod -UseDefaultCredentials -uri $wiqlUrl -Method Get -ContentType 'application/Json'
 
     Write-Host "Tfs projects found for collection $TfsCollection = " $JsonResult.Count

@@ -24,9 +24,10 @@ function Edit-TfsBuildDefs
     
     $TfsProjects = New-Object System.Collections.Generic.List[System.Object]
 
-    .'d:\Dev\PowerShell\Tfs-BuildDefinitions\Get-TfsProjects.ps1'
-    .'d:\Dev\PowerShell\Tfs-BuildDefinitions\Get-TfsBuildDefinitions.ps1'
-    .'d:\Dev\PowerShell\Tfs-BuildDefinitions\Get-TfsBuildDefTasks.ps1'
+    
+    .'C:\dev\PowerShell\Tfs-BuildDefinitions\TfsBuildUpdater\Get-TfsProjects.ps1'
+    .'C:\dev\PowerShell\Tfs-BuildDefinitions\TfsBuildUpdater\Get-TfsBuildDefinitions.ps1'
+    .'C:\dev\PowerShell\Tfs-BuildDefinitions\TfsBuildUpdater\Get-TfsBuildDefTasks.ps1'
     
     $TfsProjects = Get-TfsProjects -TfsUri $TfsUri -TfsCollection $TfsCollection
 
@@ -55,4 +56,4 @@ function Edit-TfsBuildDefs
     }
 }
 
-Edit-TfsBuildDefs   -TfsUri "http://papptfs17.binckbank.nv:8080/tfs" -TfsCollection 'Binck'
+Edit-TfsBuildDefs   -TfsUri "http://t800:8080/tfs/" -TfsCollection 'DefaultCollection'

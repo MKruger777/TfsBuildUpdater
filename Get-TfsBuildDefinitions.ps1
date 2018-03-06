@@ -27,7 +27,7 @@ function Get-TfsBuildDefinitions
     # Write-Host "TfsProject : $TfsProject"
 
     $TfsProjBuildDefs = @()
-    $wiqlUrl = "http://papptfs17.binckbank.nv:8080/tfs/$TfsCollection/$TfsProject/_apis/build/definitions?api-version=2.0"
+    $wiqlUrl = "http://t800:8080/tfs/$TfsCollection/$TfsProject/_apis/build/definitions?api-version=2.0"
     $JsonResult = Invoke-RestMethod -UseDefaultCredentials -uri $wiqlUrl -Method Get -ContentType 'application/Json'
 
     Write-Host "Build definitions found = " $JsonResult.Count

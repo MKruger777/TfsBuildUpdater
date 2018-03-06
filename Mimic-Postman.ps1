@@ -28,6 +28,48 @@ function Get-TfsBldDef
         [Parameter(Mandatory)]
         [string]$TfsCollection
     )
+#####################################################################
+
+#local
+$base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f "T800\morne","en55denwlgpdxw2t4bwkdq6apfbugspjaxbhjhrxvymex5tqb2aa")))
+
+#vsts
+#$base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f "morne","w6zlqyawxnfomgwwh3v3zll6tfg2i2y35nsjtjotbzpc5acwpvyq")))
+
+#local
+$url = "http://t800:8080/tfs/DefaultCollection/Discovery/_apis/build/definitions/2?api-version=2.0"  #local
+
+#vsts
+#$url = "https://krugers.visualstudio.com/Build-Discovery/_apis/build/definitions/1?api-version=2.0"  #vsts
+
+#$definition = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $env:SYSTEM_ACCESSTOKEN"} -Method Get -ContentType application/json
+$definition = Invoke-RestMethod -Uri $url -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -Method Get -ContentType application/json
+
+Write-Host "Befor json = $($definition | ConvertTo-Json -Depth 100)" 
+
+    #$definition.build[1].enabled = "True"   
+    #$definition.build[1].DisplayName = "LaterGet- bla-bla-bla"
+    $definition.Name = "Batman"
+
+#try {
+    $body = (Convertto-Json  $definition -Depth 100)
+    #$body = (Get-Content "C:\dev\PowerShell\Tfs-BuildDefinitions\TfsBuildUpdater\json_inputs\t800\BuildDefKillerApp.json" | Convertto-Json)
+    $Updatedefinition = Invoke-RestMethod -uri $url -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -Method PUT -Body $body -ContentType application/json
+#}
+#catch {
+#    $streamReader = [System.IO.StreamReader]::new($_.Exception.Response.GetResponseStream())
+#    $ErrResp = $streamReader.ReadToEnd() | ConvertFrom-Json
+#    $streamReader.Close()
+#}
+
+Write-Host "After json = $($Updatedefinition | ConvertTo-Json -Depth 100)" 
+
+
+#######################################################################
+
+
+
+
 
     Write-Host "`nGathering Tfs projects for:"
     Write-Host "TfsCollection : $TfsCollection"
