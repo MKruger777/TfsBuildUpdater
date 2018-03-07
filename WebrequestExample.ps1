@@ -4,26 +4,24 @@ $targetCollection = "DefaultCollection"
 $targetProject = "Acme"
 $targetBuildName = "Acme - My Build Definition"
 #$definitionsOverviewUrl = "$baseUrl/$targetCollection/$targetProject/_apis/build/Definitions"
+#lets assume that the build def will be passed in ...
+ 
 $definitionsOverviewUrl = "http://t800:8080/tfs/DefaultCollection/Discovery/_apis/build/Definitions" 
 $definitionsOverviewResponse = Invoke-WebRequest -UseDefaultCredentials -Uri $definitionsOverviewUrl
 
-
 Write-Host "content=" $definitionsOverviewResponse.Content
 
-
 $definitionsOverview = (ConvertFrom-Json $definitionsOverviewResponse.Content).value
-$BldDefinitionUrl = ($definitionsOverview | Where-Object { $_.name -eq "Elsa and Anna and olaf" } | Select-Object -First 1).url
+$BldDefinitionUrl = ($definitionsOverview | Where-Object { $_.name -eq "SuperHero" } | Select-Object -First 1).url
 $response = Invoke-WebRequest $BldDefinitionUrl -UseDefaultCredentials
 #as the variable states we get the build def URL ...
 
 Write-Host "BuildDef content =" $response.Content
 
-
 # This assumes the working directory is the location of the assembly:
-[void][System.Reflection.Assembly]::LoadFile("C:\dev\PowerShell\Tfs-BuildDefinitions\Newtonsoft.Json.dll")
+[void][System.Reflection.Assembly]::LoadFile("C:\dev\PowerShell\Tfs-BuildDefinitions\TfsBuildUpdater\newtonsoft.json.11.0.1\lib\net45\Newtonsoft.Json.dll")
 $buildDefinition = [Newtonsoft.Json.JsonConvert]::DeserializeObject($response.Content)
 Write-Host "BuildDef name=" $buildDefinition.name.ToString()
-
 
 # JObjects implement IDictionary and therefore support dot notation
 #$buildDefinition.variables.MajorMinor.value.ToString()

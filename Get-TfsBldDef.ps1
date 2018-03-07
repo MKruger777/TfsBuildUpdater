@@ -33,7 +33,6 @@ function Get-TfsBldDef
     Write-Host "TfsCollection : $TfsCollection"
 
     $TfsProjects = New-Object System.Collections.Generic.List[System.Object]
-    
     #$wiqlUrl = "https://krugers.visualstudio.com/Build-Discovery/_apis/build/definitions/1?api-version=2.0"  #WORKS! - VSTS
     $wiqlUrl = "http://t800:8080/tfs/DefaultCollection/Discovery/_apis/build/definitions/2?api-version=2.0"   #WORKS! - T800
 
@@ -50,10 +49,10 @@ function Get-TfsBldDef
     #Search for your stuff and update if required
     foreach($BldTask in $JsonResult.Build)
     {
-        Write-Host $BldTask.DisplayName.ToLower() 
+        Write-Host "`nbldtask:" $BldTask.DisplayName.ToLower() 
         if($BldTask.DisplayName.ToLower().Contains("nuget"))
         {
-            Write-Host "Build display name: " $BldTask.DisplayName
+            #Write-Host "Build display name: " $BldTask.DisplayName
             #Write-Host "Configuration properties are:"
             foreach($Prop in $BldTask.inputs.PSObject.Properties)
             {
@@ -94,25 +93,8 @@ function Get-TfsBldDef
     #temp test
     $JsonResult.name += " Hans-Peter"
 
-    #now we need to convert to JSon to update some values? ...
-    $JsonParameters = ConvertTo-Json -InputObject $JsonResult  
-       
 
     # Now lets send the sucker back and update the definition
-    #example
-    #https://fabrikam-fiber-inc.visualstudio.com/DefaultCollection/Fabrikam-Fiber-Git/_apis/build/definitions/29?api-version=2.0
-   
-    
-    try {
-            #$r = Invoke-WebRequest -Uri "$uri/api/4.0/edges" -Body $body -Method:Post -Headers $head -ContentType "application/xml" -TimeoutSec 180 -ErrorAction:Stop
-            $JsonResult = Invoke-WebRequest -uri $wiqlUrl -Method Put -Body $JsonParameters -ContentType 'application/Json' -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)}
-        } 
-        catch 
-        {
-            Failure
-        }
- 
-
 
     Write-Host "Tfs projects found for collection $TfsCollection = " $JsonResult.Count
     if($JsonResult.Count -gt 0)
@@ -128,16 +110,4 @@ function Get-TfsBldDef
     return $TfsProjects
 }
 
-function Failure {
-    $global:helpme = $body
-    $global:helpmoref = $moref
-    $global:result = $_.Exception.Response.GetResponseStream()
-    $global:reader = New-Object System.IO.StreamReader($global:result)
-    $global:responseBody = $global:reader.ReadToEnd();
-    Write-Host -BackgroundColor:Black -ForegroundColor:Red "Status: A system exception was caught."
-    Write-Host -BackgroundColor:Black -ForegroundColor:Red $global:responsebody
-    Write-Host -BackgroundColor:Black -ForegroundColor:Red "The request body has been saved to `$global:helpme"
-    break
-    }
-
-    Get-TfsBldDef -TfsUri "dfgfdgdf" -TfsCollection 'Binck'
+Get-TfsBldDef -TfsUri "dfgfdgdf" -TfsCollection 'Binck'
