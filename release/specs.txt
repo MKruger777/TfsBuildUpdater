@@ -1,0 +1,10 @@
+
+Orchetrator
+	=> Get-TfsProjects
+	    => Get-TfsBuildDefinitions
+			=> foreach(bldDef)
+				{
+					Scan for updates needed
+					Update if needed
+					Save
+				}
