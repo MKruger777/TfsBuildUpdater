@@ -21,14 +21,21 @@ function Update-TfsBuildDef
 
     #Write-Host "`nStarting build definition update for:"
     #Write-Host "TfsCollection : $TfsCollection"
-    ."D:\Dev\github\TfsBuildUpdater\release\Get-TfsProjects.ps1"
-    ."D:\Dev\github\TfsBuildUpdater\release\Get-TfsBuildDefinitions.ps1"
+    #."D:\Dev\github\TfsBuildUpdater\release\Get-TfsProjects.ps1"  #work
+    #."D:\Dev\github\TfsBuildUpdater\release\Get-TfsBuildDefinitions.ps1" #work
+
+    ."C:\dev\PowerShell\Tfs-BuildDefinitions\TfsBuildUpdater\release\Get-TfsProjects.ps1"  #work
+    ."C:\dev\PowerShell\Tfs-BuildDefinitions\TfsBuildUpdater\release\Get-TfsBuildDefinitions.ps1" #work
+
+    $Script:base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f "T800\morne","en55denwlgpdxw2t4bwkdq6apfbugspjaxbhjhrxvymex5tqb2aa")))
+    #$JsonResult = Invoke-RestMethod -uri $wiqlUrl -Method Get -ContentType 'application/Json' -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)}
 
     $TfsProjects = New-Object System.Collections.Generic.List[System.Object]
     $TfsProjects = Get-TfsProjects -TfsUri $TfsUri -TfsCollection $TfsCollection
 
     $wiqlUrl = "$TfsUri/$TfsCollection/_apis/projects?api-version=2.0"
-    $TfsProjects = Invoke-RestMethod -UseDefaultCredentials -uri $wiqlUrl -Method Get -ContentType 'application/Json'
+    #$TfsProjects = Invoke-RestMethod -UseDefaultCredentials -uri $wiqlUrl -Method Get -ContentType 'application/Json'
+    $TfsProjects = Invoke-RestMethod -UseDefaultCredentials -uri $wiqlUrl -Method Get -ContentType 'application/Json'-Headers @{Authorization=("Basic {0}" -f $Script:base64AuthInfo)}
 
     #Write-Host "Tfs projects found for collection $TfsCollection = " $TfsProjects.Count
     if($TfsProjects.Count -gt 0)
@@ -42,4 +49,5 @@ function Update-TfsBuildDef
     }
 }
 
-Update-TfsBuildDef -TfsUri "http://papptfs17.binckbank.nv:8080/tfs" -TfsCollection 'Binck'
+#Update-TfsBuildDef -TfsUri "http://papptfs17.binckbank.nv:8080/tfs" -TfsCollection 'Binck'
+Update-TfsBuildDef -TfsUri "http://t800:8080/tfs" -TfsCollection 'DefaultCollection'

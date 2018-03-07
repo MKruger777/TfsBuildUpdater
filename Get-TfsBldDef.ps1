@@ -92,22 +92,36 @@ function Get-TfsBldDef
 
     #temp test
     $JsonResult.name += " Hans-Peter"
-
-
     # Now lets send the sucker back and update the definition
 
-    Write-Host "Tfs projects found for collection $TfsCollection = " $JsonResult.Count
-    if($JsonResult.Count -gt 0)
-    {
-        Write-Host "`nTfs projects are:" 
-        foreach($TfsProj in $JsonResult.value)
-        {
-            #Write-Host $TfsProj.name
-            $TfsProjects.Add($TfsProj.name);
-        }
-    }
-    Write-Host "`n############################ END for $TfsCollection  ##############################"
-    return $TfsProjects
+
+}
+
+function  Get-TfsCollProjects
+{   
+    param(
+        [Parameter(Mandatory)]
+        [string]$TfsUri,        
+        [Parameter(Mandatory)]
+        [string]$TfsCollection
+    )
+
+    ."C:\dev\PowerShell\Tfs-BuildDefinitions\TfsBuildUpdater\Get-TfsProjects.ps1"
+    
+
+
+    # Write-Host "Tfs projects found for collection $TfsCollection = " $JsonResult.Count
+    # if($JsonResult.Count -gt 0)
+    # {
+    #     Write-Host "`nTfs projects are:" 
+    #     foreach($TfsProj in $JsonResult.value)
+    #     {
+    #         #Write-Host $TfsProj.name
+    #         $TfsProjects.Add($TfsProj.name);
+    #     }
+    # }
+    # Write-Host "`n############################ END for $TfsCollection  ##############################"
+    return $TfsProjects (OptionalParameters) 
 }
 
 Get-TfsBldDef -TfsUri "dfgfdgdf" -TfsCollection 'Binck'

@@ -29,7 +29,8 @@ function Get-TfsBuildDefinitions
     #$TfsProjBuildDefs = @()
     #returns the all build definitions for a project (limited - NOT all details)
     $Url = "$TfsUri/$TfsCollection/$TfsProject/_apis/build/definitions?api-version=2.0"
-    $BuildDefs = Invoke-RestMethod -UseDefaultCredentials -uri $Url -Method Get -ContentType 'application/Json'
+    #$BuildDefs = Invoke-RestMethod -UseDefaultCredentials -uri $Url -Method Get -ContentType 'application/Json'
+    $BuildDefs = Invoke-RestMethod -uri $Url -Method Get -ContentType 'application/Json' -Headers @{Authorization=("Basic {0}" -f $Script:base64AuthInfo)}
 
     Write-Host "`nBuild definitions found for $TfsProject = " $BuildDefs.Count
     if($BuildDefs.Count -gt 0)
@@ -60,8 +61,10 @@ function Set-Changes
     )
 
     #returns the complete build definitions a Build ID 
-    $Url = "$TfsUri/$TfsCollection/$TfsProject/_apis/build/definitions/$($TfsBuildDefId)?api-version=2.0"    
-    $TfsBuildDef = Invoke-RestMethod -uri $Url -Method Get -UseDefaultCredentials -ContentType 'application/Json'  
+    $Url = "$TfsUri/$TfsCollection/$TfsProject/_apis/build/definitions/$($TfsBuildDefId)?api-version=2.0" 
+    
+    #$TfsBuildDef = Invoke-RestMethod -uri $Url -Method Get -UseDefaultCredentials -ContentType 'application/Json'
+    $TfsBuildDef = Invoke-RestMethod -uri $Url -Method Get -ContentType 'application/Json' -Headers @{Authorization=("Basic {0}" -f $Script:base64AuthInfo)}
     Write-Host "`n-------------------------------------------------------------"
     Write-Host "Build name: " $TfsBuildDef.name
     Write-Host "Build ID: " $TfsBuildDef.ID
@@ -92,12 +95,12 @@ function Set-Changes
                 {
                     if($Prop.name.ToLower().Contains("nugetversion"))
                     {
-                        if(Find-NugetVersion ($BldTask.inputs.PSObject.Properties) -eq $false)
+                        if(Find-NugetVersion $BldTask.inputs.PSObject.Properties -eq $false)
                         {
                             Write-Host "No nugetversion property found!" -ForegroundColor Yellow
                             break
                         }
-                        if(($Prop.name.ToLower() -eq "nugetversion" -and $Prop.value.ToLower() -eq ("4.0.0.2283"))
+                        if($Prop.name.ToLower() -eq "nugetversion") # -and ($Prop.value.ToLower() -eq ("4.0.0.2283")))
                         {
                             #should be "nuGetVersion =  4.0.0.2283"
                             Write-Host "Incorrect NuGet version found! should be nuGetVersion =  4.0.0.2283" -ForegroundColor Yellow
@@ -106,7 +109,6 @@ function Set-Changes
                             Write-Host "Value = " $Prop.Value
                         }
                     }                     
-                    }
                 }
             }
             

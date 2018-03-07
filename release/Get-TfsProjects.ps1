@@ -24,7 +24,9 @@ function Get-TfsProjects
 
     $TfsProjects = New-Object System.Collections.Generic.List[System.Object]
     $wiqlUrl = "$TfsUri/$TfsCollection/_apis/projects?api-version=1.0"
-    $JsonResult = Invoke-RestMethod -UseDefaultCredentials -uri $wiqlUrl -Method Get -ContentType 'application/Json'
+    
+    #$JsonResult = Invoke-RestMethod -UseDefaultCredentials -uri $wiqlUrl -Method Get -ContentType 'application/Json'
+    $JsonResult = Invoke-RestMethod -UseDefaultCredentials -uri $wiqlUrl -Method Get -ContentType 'application/Json' -Headers @{Authorization=("Basic {0}" -f $Script:base64AuthInfo)}
 
     Write-Host "Tfs projects found for collection $TfsCollection = " $JsonResult.Count
     if($JsonResult.Count -gt 0)
